@@ -45,7 +45,8 @@ def _img_rx(stats: dict) -> int:
 def _rx_badges(stats: dict) -> str:
     parts = []
     for key, emoji in [("likeCount","👍"),("heartCount","❤️"),
-                        ("laughCount","😂"),("cryCount","😢")]:
+                        ("laughCount","😂"),("cryCount","😢"),
+                        ("commentCount","💬")]:
         v = stats.get(key, 0)
         if v:
             parts.append(f'<span class="rx-chip">{emoji} {v}</span>')

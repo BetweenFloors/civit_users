@@ -23,14 +23,14 @@ def fetch_profile(token: str, username: str) -> dict:
     return items[0] if items else {"username": username}
 
 
-def fetch_all_images(token: str, username: str) -> list[dict]:
+def fetch_all_images(token: str, username: str, browsing_level: int = 31) -> list[dict]:
     images, cursor = [], None
     while True:
         params: dict = {
             "username": username,
             "limit": 200,
             "sort": "Newest",
-            "browsingLevel": 31,
+            "browsingLevel": browsing_level,
         }
         if cursor:
             params["cursor"] = cursor
@@ -43,12 +43,12 @@ def fetch_all_images(token: str, username: str) -> list[dict]:
     return images
 
 
-def fetch_all(token: str, username: str) -> dict:
+def fetch_all(token: str, username: str, browsing_level: int = 31) -> dict:
     print("  Profile…")
     profile = fetch_profile(token, username)
 
     print("  Images…")
-    images = fetch_all_images(token, username)
+    images = fetch_all_images(token, username, browsing_level)
     print(f"  {len(images)} images fetched")
 
     # Group by postId and collect unique posts

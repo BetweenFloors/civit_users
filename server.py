@@ -91,6 +91,12 @@ _UI = """<!DOCTYPE html>
   .eye-btn { background:none; border:1px solid var(--border); border-radius:8px;
     color:var(--muted); cursor:pointer; padding:0 12px; font-size:1rem; }
   .eye-btn:hover { color:var(--text); }
+  .toggle-row { display:flex; gap:8px; }
+  .toggle-btn { flex:1; padding:9px; background:none; border:1px solid var(--border);
+    border-radius:8px; color:var(--muted); cursor:pointer; font-size:0.88rem;
+    transition:all .15s; }
+  .toggle-btn:hover { border-color:var(--accent2); color:var(--text); }
+  .toggle-btn.active { background:var(--btn); border-color:var(--btn); color:#fff; }
 </style>
 </head>
 <body>
@@ -99,7 +105,7 @@ _UI = """<!DOCTYPE html>
 
 <div class="card">
   <h1>Civitai User Reporter</h1>
-  <p class="subtitle">Generate a full HTML report for any Civitai user.</p>
+  <p class="subtitle">Generate a full HTML report for any Civitai user — based on the official API.</p>
 
   <form id="form" onsubmit="handleSubmit(event)">
     <div class="field">
@@ -127,6 +133,15 @@ _UI = """<!DOCTYPE html>
           <option value="light">☀️ Light</option>
         </select>
       </div>
+    </div>
+
+    <div class="field">
+      <label>Content</label>
+      <div class="toggle-row">
+        <button type="button" class="toggle-btn active" id="btn-all" onclick="setContent('all')">🔞 All content</button>
+        <button type="button" class="toggle-btn" id="btn-sfw" onclick="setContent('sfw')">🟢 SFW only</button>
+      </div>
+      <input type="hidden" id="browsing_level" value="31">
     </div>
 
     <button type="submit" id="btn">
@@ -158,6 +173,12 @@ function toggleTheme() {
   localStorage.setItem(LS_THEME, next);
 }
 
+function setContent(val) {
+  document.getElementById('browsing_level').value = val === 'sfw' ? '1' : '31';
+  document.getElementById('btn-all').classList.toggle('active', val === 'all');
+  document.getElementById('btn-sfw').classList.toggle('active', val === 'sfw');
+}
+
 function toggleToken() {
   const el = document.getElementById('token');
   el.type = el.type === 'password' ? 'text' : 'password';
@@ -165,9 +186,10 @@ function toggleToken() {
 
 async function handleSubmit(e) {
   e.preventDefault();
-  const token    = document.getElementById('token').value.trim();
-  const username = document.getElementById('username').value.trim();
-  const theme    = document.getElementById('theme_sel').value;
+  const token          = document.getElementById('token').value.trim();
+  const username       = document.getElementById('username').value.trim();
+  const theme          = document.getElementById('theme_sel').value;
+  const browsing_level = parseInt(document.getElementById('browsing_level').value);
 
   localStorage.setItem(LS_TOKEN, token);
 
@@ -182,7 +204,7 @@ async function handleSubmit(e) {
     const resp = await fetch('/generate', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({token, username, theme}),
+      body: JSON.stringify({token, username, theme, browsing_level}),
     });
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || `Error ${resp.status}`);
@@ -226,11 +248,12 @@ class _Handler(BaseHTTPRequestHandler):
 
         try:
             payload  = json.loads(body)
-            token    = payload.get("token", "").strip()
-            username = payload.get("username", "").strip()
-            theme    = payload.get("theme", "dark")
+            token          = payload.get("token", "").strip()
+            username       = payload.get("username", "").strip()
+            theme          = payload.get("theme", "dark")
+            browsing_level = int(payload.get("browsing_level", 31))
 
-            data     = fetch_all(token, username)
+            data     = fetch_all(token, username, browsing_level)
             html_out = generate_html(data, username, theme=theme)
             self._json(200, {"html": html_out})
 
