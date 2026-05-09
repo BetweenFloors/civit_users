@@ -258,7 +258,7 @@ tr:hover td{{background:#ffffff06}}
   </div>
 </div>
 
-<div class="footer">Generated {now} · @{html.escape(username)} · civitai.com/api/v1</div>
+<div class="footer">Generated {now} · <a href="{_USER_BASE}/{html.escape(username)}" target="_blank">@{html.escape(username)}</a> · civitai.com/api/v1 · <a href="https://github.com/BetweenFloors/civit_users" target="_blank">GitHub</a></div>
 
 <script>
 const PAGE_SIZE = 64;

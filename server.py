@@ -215,9 +215,14 @@ async function handleSubmit(e) {
   const btn     = document.getElementById('btn');
   const btnText = document.getElementById('btn-text');
   btn.disabled  = true;
-  btnText.innerHTML = '<span class="spinner"></span> Loading…';
+  btnText.innerHTML = '<span class="spinner"></span> Loading… <span id="elapsed">0s</span>';
   document.getElementById('err').style.display = 'none';
   document.getElementById('ok').style.display  = 'none';
+  const start = Date.now();
+  const timer = setInterval(() => {
+    const el = document.getElementById('elapsed');
+    if (el) el.textContent = Math.floor((Date.now() - start) / 1000) + 's';
+  }, 1000);
 
   try {
     const resp = await fetch('/generate', {
@@ -233,13 +238,15 @@ async function handleSubmit(e) {
     window.open(url, '_blank');
 
     const ok = document.getElementById('ok');
-    ok.textContent = `✓ Report for @${username} generated — opened in a new tab`;
+    ok.innerHTML = `✓ Report for @${username} generated — opened in a new tab. <a href="${url}" target="_blank" style="color:inherit;text-decoration:underline">If not, click here.</a>`;
     ok.style.display = 'block';
   } catch(err) {
+    clearInterval(timer);
     const el = document.getElementById('err');
     el.textContent = '✗ ' + err.message;
     el.style.display = 'block';
   } finally {
+    clearInterval(timer);
     btn.disabled = false;
     btnText.textContent = 'Generate report';
   }
