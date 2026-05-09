@@ -4,6 +4,8 @@ Python tool to generate a self-contained HTML profile report for any Civitai use
 
 > **Note:** Uses the official Civitai REST API (`civitai.com/api/v1`). Only public information accessible through the API is retrieved. All processing runs locally — nothing is uploaded anywhere.
 
+> **Disclaimer:** This tool uses your own Civitai API token and only retrieves data accessible through the official API. I personally use it for my own account — if you use it for others, that's on you.
+
 ## Requirements
 
 - Python 3.10+

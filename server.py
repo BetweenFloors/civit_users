@@ -62,6 +62,9 @@ _UI = """<!DOCTYPE html>
   .warning { margin-top:12px; padding:9px 12px; background:#ca8a0418;
     border:1px solid #ca8a0455; border-radius:8px; font-size:0.78rem;
     color:#fbbf24; line-height:1.4; }
+  .disclaimer { margin-top:10px; padding:9px 12px; background:#64748b12;
+    border:1px solid #64748b44; border-radius:8px; font-size:0.75rem;
+    color:var(--muted); line-height:1.4; }
 
   button[type=submit] {
     width:100%; padding:12px; background:var(--btn); color:#fff;
@@ -149,6 +152,10 @@ _UI = """<!DOCTYPE html>
     </button>
     <div class="warning">
       ⚠️ Large profiles (1000+ images) may take 30–60 seconds — please wait.
+    </div>
+    <div class="disclaimer">
+      This tool uses your own API token and only fetches data accessible through the official API.
+      I personally use it for my own account — if you use it for others, that's on you.
     </div>
   </form>
 
