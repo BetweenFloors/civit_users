@@ -66,6 +66,7 @@ def generate_html(data: dict, username: str,
     profile        = data["profile"]
     images         = data["images"]
     images_by_post = data["images_by_post"]
+    truncated      = data.get("truncated", False)
 
     # Sort images newest first (default view)
     sorted_images = sorted(images, key=lambda i: i.get("createdAt", ""), reverse=True)
@@ -162,6 +163,7 @@ a{{color:var(--accent2);text-decoration:none}}a:hover{{text-decoration:underline
 .page-header h1 a{{color:var(--accent)}}
 .header-meta{{color:var(--muted);font-size:.85rem;margin-top:5px}}
 
+.fetch-warning{{margin-bottom:16px;padding:10px 14px;background:#ca8a0418;border:1px solid #ca8a0455;border-radius:8px;font-size:0.85rem;color:#fbbf24}}
 .stats-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px}}
 .stat{{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 12px;text-align:center}}
 .stat-val{{font-size:1.9rem;font-weight:700;color:var(--accent);line-height:1}}
@@ -218,7 +220,7 @@ tr:hover td{{background:#ffffff06}}
   <h1><a href="{_USER_BASE}/{html.escape(username)}" target="_blank">@{html.escape(username)}</a></h1>
   <div class="header-meta">{profile.get("modelCount",0)} models &nbsp;·&nbsp; <a href="{_USER_BASE}/{html.escape(username)}" target="_blank">civitai.red</a></div>
 </div>
-
+{'<div class="fetch-warning">⚠️ Fetch stopped early due to an API error — results may be incomplete (' + str(len(images)) + ' images retrieved).</div>' if truncated else ''}
 <div class="stats-grid">
   <div class="stat"><div class="stat-val">{n_posts}</div><div class="stat-label">Posts</div></div>
   <div class="stat"><div class="stat-val">{len(images):,}</div><div class="stat-label">Images</div></div>

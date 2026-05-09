@@ -57,6 +57,10 @@ generate_html(data, "SomeUsername", "report.html", theme="dark")
 
 → [example_BetweenFloors.html](examples/example_BetweenFloors.html)
 
+## Caching
+
+Fetched data is cached locally in `cache/` for 12 hours. Re-generating a report for the same user within that window skips the API calls and loads instantly. Use **Force refresh** in the UI (or pass `force_refresh=True` in Python) to bypass the cache.
+
 ## Limitations
 
 Reaction counts (likes, hearts, etc.) are not always available via the official API. For some accounts, Civitai stores reactions at the post level rather than per-image, so individual image stats may show as 0. This is a platform-side limitation — the data is simply not exposed through the public API for those users.

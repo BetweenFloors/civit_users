@@ -100,6 +100,10 @@ _UI = """<!DOCTYPE html>
     transition:all .15s; }
   .toggle-btn:hover { border-color:var(--accent2); color:var(--text); }
   .toggle-btn.active { background:var(--btn); border-color:var(--btn); color:#fff; }
+  .checkbox-label { display:flex; align-items:center; gap:8px; cursor:pointer;
+    font-size:0.88rem; color:var(--muted); font-weight:normal;
+    text-transform:none; letter-spacing:0; }
+  .checkbox-label input { width:auto; accent-color:var(--btn); }
 </style>
 </head>
 <body>
@@ -145,6 +149,13 @@ _UI = """<!DOCTYPE html>
         <button type="button" class="toggle-btn" id="btn-sfw" onclick="setContent('sfw')">🟢 SFW only</button>
       </div>
       <input type="hidden" id="browsing_level" value="31">
+    </div>
+
+    <div class="field">
+      <label class="checkbox-label">
+        <input type="checkbox" id="force_refresh">
+        Force refresh <span class="hint" style="margin:0">(ignore cache, re-fetch from API)</span>
+      </label>
     </div>
 
     <button type="submit" id="btn">
@@ -197,6 +208,7 @@ async function handleSubmit(e) {
   const username       = document.getElementById('username').value.trim();
   const theme          = document.getElementById('theme_sel').value;
   const browsing_level = parseInt(document.getElementById('browsing_level').value);
+  const force_refresh  = document.getElementById('force_refresh').checked;
 
   localStorage.setItem(LS_TOKEN, token);
 
@@ -211,7 +223,7 @@ async function handleSubmit(e) {
     const resp = await fetch('/generate', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({token, username, theme, browsing_level}),
+      body: JSON.stringify({token, username, theme, browsing_level, force_refresh}),
     });
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || `Error ${resp.status}`);
@@ -259,8 +271,9 @@ class _Handler(BaseHTTPRequestHandler):
             username       = payload.get("username", "").strip()
             theme          = payload.get("theme", "dark")
             browsing_level = int(payload.get("browsing_level", 31))
+            force_refresh  = bool(payload.get("force_refresh", False))
 
-            data     = fetch_all(token, username, browsing_level)
+            data     = fetch_all(token, username, browsing_level, force_refresh)
             html_out = generate_html(data, username, theme=theme)
             self._json(200, {"html": html_out})
 
